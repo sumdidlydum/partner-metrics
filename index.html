@@ -4,51 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Partner Metrics</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
 <style>
 :root { color-scheme: light; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
   background: #fff;
   color: #1a1a1a;
-  padding: 18px 20px 12px;
+  padding: 16px 18px 10px;
 }
 
-/* Tabs */
 .tabs { display: flex; gap: 2px; background: #f0f0ee; border-radius: 8px; padding: 3px; width: fit-content; margin-bottom: 14px; }
 .tab { padding: 5px 14px; border-radius: 5px; border: none; background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; color: #777; transition: all 0.15s; }
 .tab.active { background: white; color: #111; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-/* KPI row */
-.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-@media (max-width: 560px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 520px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
 
 .kpi-card {
   background: white; border-radius: 10px; padding: 14px 16px;
   border: 1px solid #ebebeb; position: relative; overflow: hidden;
 }
-.kpi-icon { position: absolute; top: 12px; right: 12px; font-size: 18px; opacity: 0.18; }
-.kpi-label { font-size: 12px; color: #888; font-weight: 500; }
+.kpi-icon { position: absolute; top: 12px; right: 12px; font-size: 17px; opacity: 0.15; }
+.kpi-label { font-size: 11px; color: #999; font-weight: 500; }
 .kpi-value { font-size: 30px; font-weight: 700; margin-top: 6px; letter-spacing: -0.5px; line-height: 1; }
-.kpi-sub   { font-size: 10px; color: #bbb; margin-top: 5px; }
+.kpi-sub   { font-size: 10px; color: #ccc; margin-top: 5px; }
 .kpi-delta { font-size: 11px; font-weight: 600; margin-top: 5px; }
 .delta-up   { color: #16a34a; }
 .delta-down { color: #dc2626; }
-.delta-flat { color: #aaa; }
+.delta-flat { color: #bbb; }
 
-/* Chart area */
-.chart-card {
-  background: white; border-radius: 10px; padding: 14px 16px;
-  border: 1px solid #ebebeb; margin-bottom: 10px;
-}
-.chart-title { font-size: 11px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-.chart-wrap  { position: relative; height: 160px; }
-
-.footer { font-size: 10px; color: #ccc; text-align: right; margin-top: 6px; }
-
-.loading { text-align: center; padding: 40px 20px; color: #bbb; font-size: 13px; }
+.footer { font-size: 10px; color: #ddd; text-align: right; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -60,22 +46,11 @@ body {
 </div>
 
 <div id="kpi-row" class="kpi-row"></div>
-
-<div class="chart-card">
-  <div class="chart-title">Applications · Approvals · First Depositors</div>
-  <div class="chart-wrap"><canvas id="volCanvas"></canvas></div>
-</div>
-<div class="chart-card">
-  <div class="chart-title">Approval Rate %</div>
-  <div class="chart-wrap"><canvas id="rateCanvas"></canvas></div>
-</div>
-
 <div class="footer" id="footer"></div>
 
 <script>
 let allRows = [];
 let activeTab = 'affiliates';
-let volChart, rateChartObj;
 
 function fmtMonth(iso) {
   if (!iso) return '—';
@@ -90,8 +65,7 @@ function deltaHtml(curr, prev) {
   const d = ((curr - prev) / Math.abs(prev)) * 100;
   if (Math.abs(d) < 0.5) return '<div class="kpi-delta delta-flat">→ flat vs prev mo</div>';
   const cls = d > 0 ? 'delta-up' : 'delta-down';
-  const arrow = d > 0 ? '↑' : '↓';
-  return `<div class="kpi-delta ${cls}">${arrow} ${Math.abs(d).toFixed(0)}% vs prev mo</div>`;
+  return `<div class="kpi-delta ${cls}">${d>0?'↑':'↓'} ${Math.abs(d).toFixed(0)}% vs prev mo</div>`;
 }
 
 function filtered() {
@@ -117,7 +91,7 @@ function aggregate(rows) {
 function render() {
   const byMonth = aggregate(filtered());
   if (!byMonth.length) {
-    document.getElementById('kpi-row').innerHTML = '<div class="loading" style="grid-column:1/-1">No data</div>';
+    document.getElementById('kpi-row').innerHTML = '<div style="color:#bbb;font-size:13px;padding:20px 0">No data</div>';
     return;
   }
   const latest = byMonth[byMonth.length-1];
@@ -125,10 +99,10 @@ function render() {
   const lbl    = fmtMonth(latest.month);
 
   const CARDS = [
-    {label:'Applications',     value: num(latest.apps),       prev: prev?.apps,     curr: latest.apps,    color:'#3b82f6', icon:'📋'},
-    {label:'Approvals',        value: num(latest.approvs),    prev: prev?.approvs,  curr: latest.approvs, color:'#8b5cf6', icon:'✅'},
-    {label:'First Depositors', value: num(latest.deps),       prev: prev?.deps,     curr: latest.deps,    color:'#f59e0b', icon:'💰'},
-    {label:'Approval Rate',    value: pct(latest.rate),       prev: prev?.rate,     curr: latest.rate,    color:'#22c55e', icon:'📈'},
+    {label:'Applications',     value: num(latest.apps),    curr: latest.apps,    prev: prev?.apps,    color:'#3b82f6', icon:'📋'},
+    {label:'Approvals',        value: num(latest.approvs), curr: latest.approvs, prev: prev?.approvs, color:'#8b5cf6', icon:'✅'},
+    {label:'First Depositors', value: num(latest.deps),    curr: latest.deps,    prev: prev?.deps,    color:'#f59e0b', icon:'💰'},
+    {label:'Approval Rate',    value: pct(latest.rate),    curr: latest.rate,    prev: prev?.rate,    color:'#22c55e', icon:'📈'},
   ];
 
   document.getElementById('kpi-row').innerHTML = CARDS.map(c => `
@@ -139,44 +113,6 @@ function render() {
       <div class="kpi-sub">MTD · ${lbl}</div>
       ${deltaHtml(c.curr, c.prev)}
     </div>`).join('');
-
-  const labels   = byMonth.map(r => fmtMonth(r.month));
-  const appsArr  = byMonth.map(r => r.apps);
-  const appArr   = byMonth.map(r => r.approvs);
-  const depsArr  = byMonth.map(r => r.deps);
-  const ratesArr = byMonth.map(r => +r.rate.toFixed(1));
-
-  if (volChart)     volChart.destroy();
-  if (rateChartObj) rateChartObj.destroy();
-
-  const chartDefaults = {
-    responsive: true, maintainAspectRatio: false,
-    interaction: {mode:'index', intersect:false},
-    scales: {
-      x: {grid:{display:false}, ticks:{font:{size:10}, color:'#bbb'}},
-      y: {grid:{color:'#f5f5f3'}, ticks:{font:{size:10}, color:'#bbb'}}
-    }
-  };
-
-  volChart = new Chart(document.getElementById('volCanvas').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets:[
-      {label:'Applications',     data:appsArr, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.06)', tension:0.35, fill:true, pointRadius:3, pointHoverRadius:5},
-      {label:'Approvals',        data:appArr,  borderColor:'#8b5cf6', backgroundColor:'rgba(139,92,246,0.06)', tension:0.35, fill:true, pointRadius:3, pointHoverRadius:5},
-      {label:'First Depositors', data:depsArr, borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.06)',  tension:0.35, fill:true, pointRadius:3, pointHoverRadius:5}
-    ]},
-    options:{...chartDefaults, plugins:{legend:{position:'bottom', labels:{boxWidth:9, font:{size:10}, padding:12}}}}
-  });
-
-  rateChartObj = new Chart(document.getElementById('rateCanvas').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets:[
-      {label:'Approval Rate %', data:ratesArr, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.07)', tension:0.35, fill:true, pointRadius:3, pointHoverRadius:5}
-    ]},
-    options:{...chartDefaults,
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.y+'%'}}},
-      scales:{...chartDefaults.scales, y:{...chartDefaults.scales.y, min:50, max:100, ticks:{...chartDefaults.scales.y.ticks, callback:v=>v+'%'}}}}
-  });
 }
 
 async function loadData() {
@@ -189,8 +125,7 @@ async function loadData() {
       document.getElementById('footer').textContent = 'Data as of ' + json.updated + ' · Refreshed daily';
     }
   } catch(e) {
-    document.getElementById('kpi-row').innerHTML =
-      '<div class="loading" style="grid-column:1/-1">⚠️ Could not load data.json</div>';
+    document.getElementById('kpi-row').innerHTML = '<div style="color:#bbb;font-size:13px">⚠️ Could not load data</div>';
   }
 }
 
