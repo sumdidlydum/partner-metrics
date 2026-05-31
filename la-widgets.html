@@ -6,23 +6,23 @@
 <title>LA Weather and Time</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #1a1b2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; gap: 16px; flex-wrap: wrap; padding: 16px; }
-.card { background: #16213e; border-radius: 16px; padding: 24px; color: #fff; width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #8892b0; margin-bottom: 12px; }
+body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; gap: 16px; flex-wrap: wrap; padding: 16px; }
+.card { background: #ffffff; border-radius: 16px; padding: 24px; color: #1a1a2e; width: 280px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
+.label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #9ca3af; margin-bottom: 12px; }
 .weather-main { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
 .weather-icon { font-size: 48px; line-height: 1; }
-.temp { font-size: 52px; font-weight: 700; letter-spacing: -2px; }
-.condition { font-size: 14px; color: #a8b2d8; margin-bottom: 20px; text-transform: capitalize; }
-.forecast { display: flex; justify-content: space-between; border-top: 1px solid #0f3460; padding-top: 16px; }
+.temp { font-size: 52px; font-weight: 700; letter-spacing: -2px; color: #111827; }
+.condition { font-size: 14px; color: #6b7280; margin-bottom: 20px; text-transform: capitalize; }
+.forecast { display: flex; justify-content: space-between; border-top: 1px solid #f3f4f6; padding-top: 16px; }
 .day { text-align: center; flex: 1; }
-.day-name { font-size: 11px; color: #8892b0; letter-spacing: 1px; margin-bottom: 6px; }
+.day-name { font-size: 11px; color: #9ca3af; letter-spacing: 1px; margin-bottom: 6px; }
 .day-icon { font-size: 20px; margin-bottom: 4px; }
-.day-hi { color: #ccd6f6; font-weight: 600; font-size: 12px; }
-.day-lo { color: #6272a4; margin-left: 3px; font-size: 12px; }
-.time-display { font-size: 52px; font-weight: 700; letter-spacing: -2px; font-variant-numeric: tabular-nums; line-height: 1; }
-.ampm { font-size: 18px; font-weight: 400; color: #8892b0; vertical-align: super; margin-left: 4px; }
-.date-display { font-size: 13px; color: #8892b0; margin-top: 10px; }
-.tz { font-size: 11px; color: #4a5568; margin-top: 4px; letter-spacing: 1px; }
+.day-hi { color: #111827; font-weight: 600; font-size: 12px; }
+.day-lo { color: #d1d5db; margin-left: 3px; font-size: 12px; }
+.time-display { font-size: 52px; font-weight: 700; letter-spacing: -2px; font-variant-numeric: tabular-nums; line-height: 1; color: #111827; }
+.ampm { font-size: 18px; font-weight: 400; color: #9ca3af; vertical-align: super; margin-left: 4px; }
+.date-display { font-size: 13px; color: #6b7280; margin-top: 10px; }
+.tz { font-size: 11px; color: #d1d5db; margin-top: 4px; letter-spacing: 1px; }
 </style>
 </head>
 <body>
@@ -40,7 +40,6 @@ body { background: #1a1b2e; display: flex; justify-content: center; align-items:
 </div>
 <script>
 const WMO={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-const EMOJI={0:'sunny',1:'partly',2:'cloudy',3:'overcast',45:'fog',48:'fog',51:'rain',53:'rain',55:'rain',61:'rain',63:'rain',65:'rain',71:'snow',73:'snow',75:'snow',80:'rain',81:'rain',82:'storm',95:'storm',96:'storm',99:'storm'};
 const EM={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 fetch('https://api.open-meteo.com/v1/forecast?latitude=34.0522&longitude=-118.2437&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=4')
