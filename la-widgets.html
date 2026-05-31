@@ -9,6 +9,7 @@
 body { background: #f0f2f5; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; gap: 14px; flex-wrap: wrap; padding: 20px 14px; }
 .card { background: #ffffff; border-radius: 16px; padding: 20px; color: #111827; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
 .label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #374151; margin-bottom: 12px; font-weight: 700; }
+.left-col { display: flex; flex-direction: column; gap: 14px; }
 .weather-card { width: 285px; }
 .weather-main { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .weather-icon { font-size: 44px; line-height: 1; }
@@ -20,6 +21,11 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 .day-icon { font-size: 14px; margin-bottom: 3px; }
 .day-hi { color: #111827; font-weight: 600; font-size: 10px; display: block; }
 .day-lo { color: #6b7280; font-size: 10px; display: block; }
+.spx-card { width: 285px; }
+.spx-price { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #111827; margin-bottom: 2px; }
+.spx-change { font-size: 12px; font-weight: 600; }
+.spx-chart-wrap { margin-top: 10px; margin-bottom: 6px; }
+.spx-range { font-size: 10px; color: #6b7280; display: flex; justify-content: space-between; letter-spacing: 0.3px; }
 .clock-card { width: 240px; }
 .clock-face { display: flex; justify-content: center; margin-bottom: 10px; }
 .date-display { font-size: 11px; color: #374151; text-align: center; }
@@ -47,21 +53,33 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 </style>
 </head>
 <body>
-<div class="card weather-card">
-  <div class="label">Los Angeles Weather</div>
-  <div class="weather-main">
-    <div class="weather-icon" id="icon">...</div>
-    <div class="temp" id="temp">--</div>
+
+<div class="left-col">
+  <div class="card weather-card">
+    <div class="label">Los Angeles Weather</div>
+    <div class="weather-main">
+      <div class="weather-icon" id="icon">...</div>
+      <div class="temp" id="temp">--</div>
+    </div>
+    <div class="condition" id="condition">Loading...</div>
+    <div class="forecast" id="forecast"></div>
   </div>
-  <div class="condition" id="condition">Loading...</div>
-  <div class="forecast" id="forecast"></div>
+  <div class="card spx-card">
+    <div class="label">S&amp;P 500</div>
+    <div class="spx-price" id="spx-price">--</div>
+    <div class="spx-change" id="spx-change" style="color:#6b7280">Loading...</div>
+    <div class="spx-chart-wrap"><canvas id="spx-chart" width="245" height="80"></canvas></div>
+    <div class="spx-range"><span id="spx-low">L: --</span><span id="spx-high">H: --</span></div>
+  </div>
 </div>
+
 <div class="card clock-card">
   <div class="label">Los Angeles Time</div>
   <div class="clock-face"><canvas id="clock" width="186" height="186"></canvas></div>
   <div class="date-display" id="date">Loading...</div>
-  <div class="tz-label">PDT · UTC-7</div>
+  <div class="tz-label">PDT &middot; UTC-7</div>
 </div>
+
 <div class="right-col">
   <div class="card dodgers-card">
     <div class="label">LA Dodgers</div>
@@ -72,6 +90,7 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
     <ul class="news-list" id="news-list"><li style="color:#6b7280;font-size:12px">Loading...</li></ul>
   </div>
 </div>
+
 <script>
 var WMO={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
 var EM={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
@@ -100,11 +119,9 @@ function drawClock(){
   var cx=93,cy=93,r=80;
   ctx.clearRect(0,0,186,186);
 
-  // Drop shadow
   ctx.beginPath();ctx.arc(cx+2,cy+2,r+8,0,2*Math.PI);
-  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.13)';ctx.fill();
 
-  // Gold bezel
   var bezGrad=ctx.createLinearGradient(cx-r-8,cy-r-8,cx+r+8,cy+r+8);
   bezGrad.addColorStop(0,'#e8c84a');
   bezGrad.addColorStop(0.2,'#f7e48a');
@@ -113,124 +130,195 @@ function drawClock(){
   bezGrad.addColorStop(1,'#a07818');
   ctx.beginPath();ctx.arc(cx,cy,r+8,0,2*Math.PI);ctx.fillStyle=bezGrad;ctx.fill();
 
-  // Bezel inner edge
   ctx.beginPath();ctx.arc(cx,cy,r+1,0,2*Math.PI);
   ctx.strokeStyle='#7a5c10';ctx.lineWidth=1.5;ctx.stroke();
 
-  // Dial — dark navy
-  var dialGrad=ctx.createRadialGradient(cx-18,cy-18,4,cx,cy,r);
-  dialGrad.addColorStop(0,'#243358');
-  dialGrad.addColorStop(0.5,'#0f1e3a');
-  dialGrad.addColorStop(1,'#08142a');
+  var dialGrad=ctx.createRadialGradient(cx-15,cy-15,3,cx,cy,r);
+  dialGrad.addColorStop(0,'#fffff8');
+  dialGrad.addColorStop(0.4,'#faf8f0');
+  dialGrad.addColorStop(1,'#e6e2d4');
   ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle=dialGrad;ctx.fill();
 
-  // Minute dots
   for(var i=0;i<60;i++){
     if(i%5!==0){
       var a=(i*6-90)*Math.PI/180;
-      ctx.beginPath();ctx.arc(cx+(r-5)*Math.cos(a),cy+(r-5)*Math.sin(a),1,0,2*Math.PI);
-      ctx.fillStyle='rgba(200,164,40,0.45)';ctx.fill();
+      ctx.beginPath();ctx.arc(cx+(r-5)*Math.cos(a),cy+(r-5)*Math.sin(a),0.9,0,2*Math.PI);
+      ctx.fillStyle='rgba(30,25,20,0.35)';ctx.fill();
     }
   }
 
-  // Hour baton markers (skip i=0, which is 12 — crown goes there)
+  var subR=15,subDist=42;
+  var subs=[{x:cx-subDist,y:cy},{x:cx,y:cy+subDist},{x:cx+subDist,y:cy}];
+  subs.forEach(function(sd){
+    ctx.beginPath();ctx.arc(sd.x,sd.y,subR,0,2*Math.PI);
+    ctx.fillStyle='#1c1c1c';ctx.fill();
+    ctx.beginPath();ctx.arc(sd.x,sd.y,subR-1,0,2*Math.PI);
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.8;ctx.stroke();
+    for(var t=0;t<12;t++){
+      var ta=(t*30-90)*Math.PI/180;
+      ctx.beginPath();
+      ctx.moveTo(sd.x+(subR-4)*Math.cos(ta),sd.y+(subR-4)*Math.sin(ta));
+      ctx.lineTo(sd.x+(subR-2)*Math.cos(ta),sd.y+(subR-2)*Math.sin(ta));
+      ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.lineWidth=0.7;ctx.stroke();
+    }
+  });
+
+  var secInSubA=(s*6-90)*Math.PI/180;
+  ctx.save();ctx.translate(subs[0].x,subs[0].y);ctx.rotate(secInSubA);
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=0.9;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(0,4);ctx.lineTo(0,-10);ctx.stroke();
+  ctx.restore();
+
+  subs.forEach(function(sd){
+    ctx.beginPath();ctx.arc(sd.x,sd.y,1.5,0,2*Math.PI);
+    ctx.fillStyle='rgba(255,255,255,0.65)';ctx.fill();
+  });
+
   for(var i=1;i<12;i++){
+    if(i===3||i===6||i===9) continue;
     var a=(i*30-90)*Math.PI/180;
     ctx.save();
     ctx.translate(cx+(r-12)*Math.cos(a),cy+(r-12)*Math.sin(a));
     ctx.rotate(a+Math.PI/2);
-    var bGrad=ctx.createLinearGradient(-2.5,-8,2.5,8);
-    bGrad.addColorStop(0,'#b89020');
-    bGrad.addColorStop(0.4,'#f7e48a');
-    bGrad.addColorStop(1,'#b89020');
-    ctx.fillStyle=bGrad;
+    ctx.fillStyle='#1c1c1c';
     ctx.fillRect(-2.5,-8,5,16);
+    ctx.fillStyle='rgba(250,248,230,0.5)';
+    ctx.fillRect(-1,-6,2,12);
     ctx.restore();
   }
 
-  // Crown at 12
   ctx.font='bold 13px serif';
-  ctx.fillStyle='#e8c84a';
+  ctx.fillStyle='#1c1c1c';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText('❛',cx,cy-56);
+  ctx.fillText('♛',cx,cy-57);
 
-  // ROLEX
-  ctx.font='bold 9px "Times New Roman",Georgia,serif';
-  ctx.fillStyle='#eacc50';
+  ctx.font='bold 8.5px "Times New Roman",Georgia,serif';
+  ctx.fillStyle='#1c1c1c';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText('ROLEX',cx,cy-40);
+  ctx.fillText('ROLEX',cx,cy-43);
 
-  // OYSTER PERPETUAL
-  ctx.font='5.5px "Times New Roman",Georgia,serif';
-  ctx.fillStyle='rgba(220,185,60,0.75)';
+  ctx.font='5px "Times New Roman",Georgia,serif';
+  ctx.fillStyle='rgba(28,22,18,0.72)';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText('OYSTER PERPETUAL',cx,cy-31);
+  ctx.fillText('OYSTER PERPETUAL',cx,cy-34);
 
-  // Date window at 3 o'clock
-  ctx.fillStyle='rgba(240,238,228,0.96)';
-  ctx.strokeStyle='#c8a428';
-  ctx.lineWidth=1;
-  ctx.fillRect(cx+47,cy-6,15,12);
-  ctx.strokeRect(cx+47,cy-6,15,12);
-  ctx.font='bold 7px sans-serif';
-  ctx.fillStyle='#111827';
+  ctx.font='bold 5px "Times New Roman",Georgia,serif';
+  ctx.fillStyle='rgba(28,22,18,0.65)';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText(la.getDate(),cx+54,cy);
+  ctx.fillText('COSMOGRAPH DAYTONA',cx,cy+12);
 
-  // Hour hand — gold cathedral
   var hA=((h+m/60+s/3600)*30-90)*Math.PI/180;
-  ctx.save();
-  ctx.translate(cx,cy);ctx.rotate(hA);
-  var hGrad=ctx.createLinearGradient(-4,0,4,0);
-  hGrad.addColorStop(0,'#906810');
-  hGrad.addColorStop(0.35,'#f0d060');
-  hGrad.addColorStop(0.65,'#f7e48a');
-  hGrad.addColorStop(1,'#906810');
-  ctx.fillStyle=hGrad;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(hA);
+  ctx.fillStyle='#1c1c1c';
   ctx.beginPath();
-  ctx.moveTo(-3,9);ctx.lineTo(-3.5,-20);ctx.lineTo(-1.5,-44);ctx.lineTo(0,-47);ctx.lineTo(1.5,-44);ctx.lineTo(3.5,-20);ctx.lineTo(3,9);
+  ctx.moveTo(-3,9);ctx.lineTo(-3.5,-20);ctx.lineTo(-1.5,-40);ctx.lineTo(0,-43);ctx.lineTo(1.5,-40);ctx.lineTo(3.5,-20);ctx.lineTo(3,9);
   ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(10,22,48,0.55)';ctx.fillRect(-1.2,-38,2.4,18);
+  ctx.fillStyle='rgba(252,249,230,0.55)';
+  ctx.fillRect(-1.2,-36,2.4,16);
   ctx.restore();
 
-  // Minute hand — gold, longer
   var mA=((m+s/60)*6-90)*Math.PI/180;
-  ctx.save();
-  ctx.translate(cx,cy);ctx.rotate(mA);
-  var minGrad=ctx.createLinearGradient(-3,0,3,0);
-  minGrad.addColorStop(0,'#906810');
-  minGrad.addColorStop(0.35,'#f0d060');
-  minGrad.addColorStop(0.65,'#f7e48a');
-  minGrad.addColorStop(1,'#906810');
-  ctx.fillStyle=minGrad;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(mA);
+  ctx.fillStyle='#1c1c1c';
   ctx.beginPath();
-  ctx.moveTo(-2.5,9);ctx.lineTo(-2.5,-26);ctx.lineTo(-1,-66);ctx.lineTo(0,-69);ctx.lineTo(1,-66);ctx.lineTo(2.5,-26);ctx.lineTo(2.5,9);
+  ctx.moveTo(-2.5,9);ctx.lineTo(-2.5,-24);ctx.lineTo(-1,-60);ctx.lineTo(0,-63);ctx.lineTo(1,-60);ctx.lineTo(2.5,-24);ctx.lineTo(2.5,9);
   ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(10,22,48,0.55)';ctx.fillRect(-1,-58,2,20);
+  ctx.fillStyle='rgba(252,249,230,0.55)';
+  ctx.fillRect(-1,-54,2,20);
   ctx.restore();
 
-  // Second hand — red with counterbalance disc
   var sA=(s*6-90)*Math.PI/180;
-  ctx.save();
-  ctx.translate(cx,cy);ctx.rotate(sA);
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(sA);
   ctx.strokeStyle='#dc2626';ctx.lineWidth=1.2;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,-71);ctx.stroke();
-  ctx.beginPath();ctx.arc(0,9,3.5,0,2*Math.PI);ctx.fillStyle='#dc2626';ctx.fill();
+  ctx.beginPath();ctx.moveTo(0,12);ctx.lineTo(0,-68);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,6,3,0,2*Math.PI);ctx.fillStyle='#dc2626';ctx.fill();
   ctx.restore();
 
-  // Center cap — gold
   ctx.beginPath();ctx.arc(cx,cy,5,0,2*Math.PI);
-  var capGrad=ctx.createRadialGradient(cx-1,cy-1,0.5,cx,cy,5);
-  capGrad.addColorStop(0,'#f7e48a');capGrad.addColorStop(1,'#7a5c10');
-  ctx.fillStyle=capGrad;ctx.fill();
+  ctx.fillStyle='#1c1c1c';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,3,0,2*Math.PI);
+  ctx.fillStyle='#e8c84a';ctx.fill();
 
   document.getElementById('date').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(now);
 }
 drawClock();setInterval(drawClock,1000);
+
+function drawSPXChart(points,isUp){
+  var canvas=document.getElementById('spx-chart');
+  var ctx=canvas.getContext('2d');
+  var W=canvas.width,I=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  var minV=Math.min.apply(null,points);
+  var maxV=Math.max.apply(null,points);
+  var range=maxV-minV||1;
+  var pt=6,pb=6,pl=4,pr=4;
+  var W2=W-pl-pr,H2=H-pt-pb;
+  var color=isUp?'#16a34a':'#dc2626';
+  var n=points.length;
+
+  var grad=ctx.createLinearGradient(0,pt,0,H-pb);
+  grad.addColorStop(0,isUp?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)');
+  grad.addColorStop(1,'rgba(255,255,255,0)');
+
+  ctx.beginPath();
+  for(var i=0;i<n;i++){
+    var x=pl+(i/(n-1))*W2;
+    var y=pt+(1-(points[i]-minV)/range)*H2;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  var lpx=pl+W2;
+  var lpy=pt+(1-(points[n-1]-minV)/range)*H2;
+  ctx.lineTo(lpx,H-pb);
+  ctx.lineTo(pl,H-pb);
+  ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+
+  ctx.beginPath();
+  for(var i=0;i<n;i++){
+    var x=pl+(i/(n-1))*W2;
+    var y=pt+(1-(points[i]-minV)/range)*H2;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+
+  ctx.beginPath();ctx.arc(lpx,lpy,3,0,2*Math.PI);
+  ctx.fillStyle=color;ctx.fill();
+}
+
+function loadSPX(){
+  var yurl='https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=5m&range=1d';
+  fetch('https://corsproxy.io/?url='+encodeURIComponent(yurl))
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var result=data.chart&&data.chart.result&&data.chart.result[0];
+    if(!result) throw new Error('no data');
+    var meta=result.meta;
+    var price=meta.regularMarketPrice||meta.chartPreviousClose;
+    var prev=meta.previousClose||meta.chartPreviousClose;
+    var chg=price-prev;
+    var pct=(chg/prev)*100;
+    document.getElementById('spx-price').textContent=price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    var cel=document.getElementById('spx-change');
+    cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
+    cel.style.color=chg>=0?'#16a34a':'#dc2626';
+    if(meta.regularMarketDayLow) document.getElementById('spx-low').textContent='L: '+meta.regularMarketDayLow.toFixed(2);
+    if(meta.regularMarketDayHigh) document.getElementById('spx-high').textContent='H: '+meta.regularMarketDayHigh.toFixed(2);
+    var closes=(result.indicators&&result.indicators.quote[0])?result.indicators.quote[0].close:[];
+    var pts=[];
+    for(var i=0;i<closes.length;i++){if(closes[i]!=null) pts.push(closes[i]);}
+    if(pts.length>1) drawSPXChart(pts,chg>=0);
+  })
+  .catch(function(){
+    document.getElementById('spx-change').textContent='Market data unavailable';
+    document.getElementById('spx-change').style.color='#6b7280';
+  });
+}
+loadSPX();
+setInterval(loadSPX,60000);
 
 fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
 .then(function(r){return r.json();}).then(function(data){
@@ -256,19 +344,28 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
   }
   el.innerHTML='<div class="game-teams">'+
     '<div class="team"><img class="team-logo" src="'+away.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+away.team.abbreviation+'</div></div>'+
-    '<div class="vs-scores"><div class="score-line"><span class="score-num">'+away.score+'</span><span class="score-sep">–</span><span class="score-num">'+home.score+'</span></div></div>'+
+    '<div class="vs-scores"><div class="score-line"><span class="score-num">'+away.score+'</span><span class="score-sep">&ndash;</span><span class="score-num">'+home.score+'</span></div></div>'+
     '<div class="team"><img class="team-logo" src="'+home.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+home.team.abbreviation+'</div></div>'+
     '</div>'+badge+'<div class="game-status">'+status.shortDetail+'</div>';
 }).catch(function(){document.getElementById('dodgers-content').innerHTML='<div style="color:#6b7280;font-size:12px">Score unavailable</div>';});
 
-fetch('https://site.api.espn.com/apis/site/v2/sports/news?limit=5')
-.then(function(r){return r.json();}).then(function(data){
-  var articles=(data.articles||[]).slice(0,5);
+Promise.all([
+  fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=4').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+  fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+  fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+]).then(function(sets){
+  var all=[];
+  var labs=['MLB','NBA','NFL'];
+  sets.forEach(function(d,idx){
+    var arts=d.articles||[];
+    for(var i=0;i<Math.min(arts.length,2);i++){
+      if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
+    }
+  });
+  all=all.slice(0,5);
   var out='';
-  for(var i=0;i<articles.length;i++){
-    var a=articles[i];
-    var sport=a.categories&&a.categories.length?a.categories[0].description:'Sports';
-    out+='<li class="news-item"><div class="news-sport">'+sport+'</div><div class="news-headline">'+a.headline+'</div></li>';
+  for(var i=0;i<all.length;i++){
+    out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
   }
   document.getElementById('news-list').innerHTML=out||'<li style="color:#6b7280;font-size:12px">No news available</li>';
 }).catch(function(){document.getElementById('news-list').innerHTML='<li style="color:#6b7280;font-size:12px">News unavailable</li>';});
