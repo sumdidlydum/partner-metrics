@@ -74,6 +74,9 @@ body { background: #eef0f4; display: flex; justify-content: center; align-items:
 .sg-detail { font-size: 9px; color: #9ca3af; margin-top: 1px; white-space: nowrap; }
 .sg-news-hl { font-size: 11px; color: #374151; line-height: 1.4; padding: 2px 0; }
 .sg-news-tag { font-size: 8px; color: #9ca3af; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+.sg-bullet { font-size: 11px; color: #374151; line-height: 1.4; padding: 4px 0 4px 12px; position: relative; }
+.sg-bullet+.sg-bullet { border-top: 1px solid #f9fafb; }
+.sg-bullet::before { content: '•'; position: absolute; left: 0; color: #9ca3af; font-size: 10px; }
 </style>
 </head>
 <body>
@@ -393,15 +396,17 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
 function loadScores(){
   var sports=[
     {s:'basketball',l:'nba',label:'NBA'},
-    {s:'football',l:'nfl',label:'NFL'},
     {s:'baseball',l:'mlb',label:'MLB'}
   ];
-  Promise.all(sports.map(function(cfg){
+  var sportsP=Promise.all(sports.map(function(cfg){
     return Promise.all([
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/scoreboard').then(function(r){return r.json();}).catch(function(){return {events:[]};}),
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
-  })).then(function(all){
+  }));
+  var breakingP=fetch('https://site.api.espn.com/apis/site/v2/sports/news?limit=5').then(function(r){return r.json();}).catch(function(){return {articles:[]};});
+  Promise.all([sportsP,breakingP]).then(function(outer){
+    var all=outer[0],breaking=outer[1];
     var html='';
     all.forEach(function(sd){
       html+='<div class="sport-section"><div class="sport-lbl">'+sd.cfg.label+'</div>';
@@ -449,6 +454,13 @@ function loadScores(){
       }
       html+='</div>';
     });
+    html+='<div class="sport-section"><div class="sport-lbl">Breaking News</div>';
+    var arts=breaking.articles||[],count=0;
+    for(var i=0;i<arts.length&&count<3;i++){
+      if(arts[i]&&arts[i].headline){html+='<div class="sg-bullet">'+arts[i].headline+'</div>';count++;}
+    }
+    if(!count)html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
+    html+='</div>';
     document.getElementById('scores-content').innerHTML=html;
   }).catch(function(){document.getElementById('scores-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Scores unavailable</div>';});
 }
