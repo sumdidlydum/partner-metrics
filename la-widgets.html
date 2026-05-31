@@ -111,19 +111,19 @@ body { background: #eef0f4; display: flex; justify-content: center; align-items:
 
 <script>
 var WMO={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-var EM={0:'âï¸',1:'ð¤',2:'â',3:'âï¸',45:'ð«',48:'ð«',51:'ð¦',53:'ð¦',55:'ð§',61:'ð§',63:'ð§',65:'ð§',71:'âï¸',73:'âï¸',75:'âï¸',80:'ð¦',81:'ð¦',82:'â',95:'â',96:'â',99:'â'};
+var EM={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 fetch('https://api.open-meteo.com/v1/forecast?latitude=34.0522&longitude=-118.2437&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=8')
 .then(function(r){return r.json();}).then(function(d){
   var cur=d.current,code=cur.weather_code;
-  document.getElementById('icon').textContent=EM[code]||'ð¡';
-  document.getElementById('temp').textContent=Math.round(cur.temperature_2m)+'Â°F';
+  document.getElementById('icon').textContent=EM[code]||'🌡';
+  document.getElementById('temp').textContent=Math.round(cur.temperature_2m)+'°F';
   document.getElementById('condition').textContent=WMO[code]||'Unknown';
   var fc=d.daily,out='';
   for(var i=1;i<8;i++){
     var day=new Date(fc.time[i]+'T12:00:00');
-    out+='<div class="day"><div class="day-name">'+DAYS[day.getDay()]+'</div><div class="day-icon">'+(EM[fc.weather_code[i]]||'ð¡')+'</div><span class="day-hi">'+Math.round(fc.temperature_2m_max[i])+'Â°</span><span class="day-lo">'+Math.round(fc.temperature_2m_min[i])+'Â°</span></div>';
+    out+='<div class="day"><div class="day-name">'+DAYS[day.getDay()]+'</div><div class="day-icon">'+(EM[fc.weather_code[i]]||'🌡')+'</div><span class="day-hi">'+Math.round(fc.temperature_2m_max[i])+'°</span><span class="day-lo">'+Math.round(fc.temperature_2m_min[i])+'°</span></div>';
   }
   document.getElementById('forecast').innerHTML=out;
 }).catch(function(){document.getElementById('condition').textContent='Weather unavailable';});
@@ -139,7 +139,7 @@ function drawClock(){
   var tzName=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',timeZoneName:'short'}).formatToParts(now).find(function(p){return p.type==='timeZoneName';}).value;
   var tzOffset=tzName==='PDT'?'UTC-7':'UTC-8';
   var tzEl=document.getElementById('tz-label');
-  if(tzEl)tzEl.textContent=tzName+' Â· '+tzOffset;
+  if(tzEl)tzEl.textContent=tzName+' · '+tzOffset;
   var cx=93,cy=93,r=80;
   ctx.clearRect(0,0,186,186);
 
@@ -215,7 +215,7 @@ function drawClock(){
   ctx.fillStyle='#1c1c1c';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText('â',cx,cy-57);
+  ctx.fillText('♛',cx,cy-57);
 
   ctx.font='bold 8.5px "Times New Roman",Georgia,serif';
   ctx.fillStyle='#1c1c1c';
@@ -280,11 +280,11 @@ function drawSPXChart(points,isUp){
   var maxV=Math.max.apply(null,points);
   var range=maxV-minV||1;
   var pt=6,pb=6,pl=4,pr=4;
-  var W2=W-pl-pr,HÒ=H-pt-pb;
+  var W2=W-pl-pr,H2=H-pt-pb;
   var color=isUp?'#16a34a':'#dc2626';
   var n=points.length;
 
-  var grad=ctx.createLinearGradient(0,pt,0,s-pb);
+  var grad=ctx.createLinearGradient(0,pt,0,H-pb);
   grad.addColorStop(0,isUp?'rgba(22,163,74,0.18)':'rgba(220,38,38,0.18)');
   grad.addColorStop(1,'rgba(255,255,255,0)');
 
@@ -325,9 +325,9 @@ function loadSPX(){
     var prev=meta.previousClose||meta.chartPreviousClose;
     var chg=price-prev;
     var pct=(chg/prev)*100;
-    document.getElementById('spx-price').textContent=price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:-});
+    document.getElementById('spx-price').textContent=price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     var cel=document.getElementById('spx-change');
-    cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'+' +'('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
+    cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
     cel.style.color=chg>=0?'#16a34a':'#dc2626';
     if(meta.regularMarketDayLow) document.getElementById('spx-low').textContent='L: '+meta.regularMarketDayLow.toFixed(2);
     if(meta.regularMarketDayHigh) document.getElementById('spx-high').textContent='H: '+meta.regularMarketDayHigh.toFixed(2);
@@ -356,7 +356,7 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
   var el=document.getElementById('dodgers-content');
   if(!game){el.innerHTML='<div style="color:#9ca3af;font-size:12px;text-align:center;padding:20px 0">No game today</div>';return;}
   var comp=game.competitions[0];
-  var away=comp.competitors[0].homeAway==='away'comp.competitors[0]:comp.competitors[1];
+  var away=comp.competitors[0].homeAway==='away'?comp.competitors[0]:comp.competitors[1];
   var home=comp.competitors[0].homeAway==='home'?comp.competitors[0]:comp.competitors[1];
   var lad=away.team.abbreviation==='LAD'?away:home;
   var opp=away.team.abbreviation==='LAD'?home:away;
@@ -371,7 +371,7 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
     badge='<div style="text-align:center;margin-bottom:6px"><span class="result-badge '+(won?'win':'loss')+'">'+(won?'WIN':'LOSS')+'</span></div>';
   }
   el.innerHTML='<div class="game-teams">'+
-    '<div class="team"><img class="team-logo" src="'+away.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+away.team.abbreviation+)'</div>'+(awayRecord?'<div class="team-record">'+awayRecord+'</div>':'')+'</div>'+
+    '<div class="team"><img class="team-logo" src="'+away.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+away.team.abbreviation+'</div>'+(awayRecord?'<div class="team-record">'+awayRecord+'</div>':'')+'</div>'+
     '<div class="vs-scores"><div class="score-line"><span class="score-num">'+away.score+'</span><span class="score-sep">&ndash;</span><span class="score-num">'+home.score+'</span></div></div>'+
     '<div class="team"><img class="team-logo" src="'+home.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+home.team.abbreviation+'</div>'+(homeRecord?'<div class="team-record">'+homeRecord+'</div>':'')+'</div>'+
     '</div>'+badge+'<div class="game-status">'+status.shortDetail+'</div>';
@@ -387,13 +387,13 @@ Promise.all([
   sets.forEach(function(d,idx){
     var arts=d.articles||[];
     for(var i=0;i<Math.min(arts.length,2);i++){
-	    if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
+      if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
     }
   });
   all=all.slice(0,6);
   var out='';
   for(var i=0;i<all.length;i++){
-	out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
+    out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
   }
   document.getElementById('news-list').innerHTML=out||'<li style="color:#9ca3af;font-size:12px">No news available</li>';
 }).catch(function(){document.getElementById('news-list').innerHTML='<li style="color:#9ca3af;font-size:12px">News unavailable</li>';});
