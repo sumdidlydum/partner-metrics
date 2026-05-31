@@ -54,13 +54,26 @@ body { background: #eef0f4; display: flex; justify-content: center; align-items:
 .win { background: #dcfce7; color: #166534; }
 .loss { background: #fee2e2; color: #991b1b; }
 
-/* News */
-.news-card { width: 285px; }
-.news-list { list-style: none; }
-.news-item { padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
-.news-item:last-child { border-bottom: none; padding-bottom: 0; }
-.news-sport { font-size: 8px; color: #9ca3af; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
-.news-headline { font-size: 12px; color: #111827; font-weight: 500; line-height: 1.45; }
+/* Scores */
+.scores-card { width: 285px; }
+.sport-section+.sport-section { border-top: 1px solid #f3f4f6; margin-top: 11px; padding-top: 11px; }
+.sport-lbl { font-size: 8px; color: #9ca3af; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+.sg-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+.sg-row+.sg-row { border-top: 1px solid #f9fafb; }
+.sg-main { display: flex; align-items: center; gap: 5px; flex: 1; }
+.sg-abbr { font-size: 11px; font-weight: 700; color: #6b7280; min-width: 24px; }
+.sg-abbr-w { color: #111827; }
+.sg-num { font-size: 14px; font-weight: 700; color: #111827; min-width: 16px; text-align: center; }
+.sg-dot { font-size: 10px; color: #d1d5db; }
+.sg-at { font-size: 10px; color: #9ca3af; }
+.sg-right { text-align: right; }
+.sg-badge { display: inline-block; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; white-space: nowrap; }
+.sg-live { background: #dcfce7; color: #15803d; }
+.sg-final { background: #f3f4f6; color: #6b7280; }
+.sg-sched { background: #eff6ff; color: #3b82f6; }
+.sg-detail { font-size: 9px; color: #9ca3af; margin-top: 1px; white-space: nowrap; }
+.sg-news-hl { font-size: 11px; color: #374151; line-height: 1.4; padding: 2px 0; }
+.sg-news-tag { font-size: 8px; color: #9ca3af; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
 </style>
 </head>
 <body>
@@ -101,11 +114,11 @@ body { background: #eef0f4; display: flex; justify-content: center; align-items:
   </div>
 </div>
 
-<!-- Column 3: Sports News -->
+<!-- Column 3: Sports Scores -->
 <div class="col">
-  <div class="card news-card">
-    <div class="label">Top Sports News</div>
-    <ul class="news-list" id="news-list"><li style="color:#9ca3af;font-size:12px">Loading...</li></ul>
+  <div class="card scores-card">
+    <div class="label">Scores &amp; Updates</div>
+    <div id="scores-content"><div style="color:#9ca3af;font-size:12px">Loading...</div></div>
   </div>
 </div>
 
@@ -377,26 +390,70 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
     '</div>'+badge+'<div class="game-status">'+status.shortDetail+'</div>';
 }).catch(function(){document.getElementById('dodgers-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Score unavailable</div>';});
 
-Promise.all([
-  fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
-  fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
-  fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
-]).then(function(sets){
-  var all=[];
-  var labs=['NBA','NFL','MLB'];
-  sets.forEach(function(d,idx){
-    var arts=d.articles||[];
-    for(var i=0;i<Math.min(arts.length,2);i++){
-      if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
-    }
-  });
-  all=all.slice(0,6);
-  var out='';
-  for(var i=0;i<all.length;i++){
-    out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
-  }
-  document.getElementById('news-list').innerHTML=out||'<li style="color:#9ca3af;font-size:12px">No news available</li>';
-}).catch(function(){document.getElementById('news-list').innerHTML='<li style="color:#9ca3af;font-size:12px">News unavailable</li>';});
+function loadScores(){
+  var sports=[
+    {s:'basketball',l:'nba',label:'NBA'},
+    {s:'football',l:'nfl',label:'NFL'},
+    {s:'baseball',l:'mlb',label:'MLB'}
+  ];
+  Promise.all(sports.map(function(cfg){
+    return Promise.all([
+      fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/scoreboard').then(function(r){return r.json();}).catch(function(){return {events:[]};}),
+      fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
+    ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
+  })).then(function(all){
+    var html='';
+    all.forEach(function(sd){
+      html+='<div class="sport-section"><div class="sport-lbl">'+sd.cfg.label+'</div>';
+      var evs=sd.events.slice().sort(function(a,b){
+        var ord={in:0,post:1,pre:2};
+        var sa=a.competitions[0].status.type.state||'pre';
+        var sb=b.competitions[0].status.type.state||'pre';
+        return (ord[sa]!==undefined?ord[sa]:2)-(ord[sb]!==undefined?ord[sb]:2);
+      }).slice(0,3);
+      if(evs.length>0){
+        evs.forEach(function(ev){
+          var comp=ev.competitions[0];
+          var cs=comp.competitors;
+          var away=cs[0].homeAway==='away'?cs[0]:cs[1];
+          var home=cs[0].homeAway==='home'?cs[0]:cs[1];
+          var st=comp.status.type;
+          var awayW=st.completed&&parseInt(away.score||0)>parseInt(home.score||0);
+          var homeW=st.completed&&parseInt(home.score||0)>parseInt(away.score||0);
+          html+='<div class="sg-row"><div class="sg-main">';
+          if(st.state==='pre'){
+            html+='<span class="sg-abbr">'+away.team.abbreviation+'</span><span class="sg-at">@</span><span class="sg-abbr">'+home.team.abbreviation+'</span>';
+          } else {
+            html+='<span class="sg-abbr'+(awayW?' sg-abbr-w':'')+'">'+away.team.abbreviation+'</span>';
+            html+='<span class="sg-num">'+(away.score||'0')+'</span><span class="sg-dot">·</span><span class="sg-num">'+(home.score||'0')+'</span>';
+            html+='<span class="sg-abbr'+(homeW?' sg-abbr-w':'')+'">'+home.team.abbreviation+'</span>';
+          }
+          html+='</div><div class="sg-right">';
+          if(st.state==='in'){
+            html+='<span class="sg-badge sg-live">LIVE</span><div class="sg-detail">'+st.shortDetail+'</div>';
+          } else if(st.completed){
+            html+='<span class="sg-badge sg-final">FINAL</span>';
+          } else {
+            html+='<span class="sg-badge sg-sched">'+(st.shortDetail||'TBD')+'</span>';
+          }
+          html+='</div></div>';
+        });
+      } else {
+        var arts=sd.articles;
+        if(arts[0]&&arts[0].headline){
+          html+='<div class="sg-news-tag">LATEST</div><div class="sg-news-hl">'+arts[0].headline+'</div>';
+          if(arts[1]&&arts[1].headline)html+='<div class="sg-news-hl" style="color:#6b7280;margin-top:4px">'+arts[1].headline+'</div>';
+        } else {
+          html+='<div style="color:#9ca3af;font-size:11px">Off-season</div>';
+        }
+      }
+      html+='</div>';
+    });
+    document.getElementById('scores-content').innerHTML=html;
+  }).catch(function(){document.getElementById('scores-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Scores unavailable</div>';});
+}
+loadScores();
+setInterval(loadScores,60000);
 </script>
 </body>
 </html>
