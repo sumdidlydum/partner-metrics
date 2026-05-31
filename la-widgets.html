@@ -250,7 +250,7 @@ drawClock();setInterval(drawClock,1000);
 function drawSPXChart(points,isUp){
   var canvas=document.getElementById('spx-chart');
   var ctx=canvas.getContext('2d');
-  var W=canvas.width,I=canvas.height;
+  var W=canvas.width,H=canvas.height;
   ctx.clearRect(0,0,W,H);
   var minV=Math.min.apply(null,points);
   var maxV=Math.max.apply(null,points);
