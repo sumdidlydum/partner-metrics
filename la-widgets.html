@@ -6,36 +6,45 @@
 <title>LA Dashboard</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #f0f2f5; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; gap: 14px; flex-wrap: wrap; padding: 20px 14px; }
-.card { background: #ffffff; border-radius: 16px; padding: 20px; color: #111827; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
-.label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #374151; margin-bottom: 12px; font-weight: 700; }
-.left-col { display: flex; flex-direction: column; gap: 14px; }
+body { background: #eef0f4; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; gap: 16px; flex-wrap: wrap; padding: 28px 20px; }
+.col { display: flex; flex-direction: column; gap: 14px; }
+.card { background: #ffffff; border-radius: 18px; padding: 20px; color: #111827; box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.07); border: 1px solid #e5e7eb; }
+.label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: #9ca3af; margin-bottom: 14px; font-weight: 700; }
+
+/* Weather */
 .weather-card { width: 285px; }
 .weather-main { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .weather-icon { font-size: 44px; line-height: 1; }
 .temp { font-size: 48px; font-weight: 700; letter-spacing: -2px; color: #111827; }
 .condition { font-size: 13px; color: #374151; margin-bottom: 14px; text-transform: capitalize; }
-.forecast { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #e5e7eb; padding-top: 12px; gap: 2px; }
+.forecast { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #f3f4f6; padding-top: 12px; gap: 2px; }
 .day { text-align: center; }
-.day-name { font-size: 8px; color: #4b5563; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
+.day-name { font-size: 8px; color: #6b7280; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
 .day-icon { font-size: 14px; margin-bottom: 3px; }
 .day-hi { color: #111827; font-weight: 600; font-size: 10px; display: block; }
-.day-lo { color: #6b7280; font-size: 10px; display: block; }
+.day-lo { color: #9ca3af; font-size: 10px; display: block; }
+
+/* SPX */
 .spx-card { width: 285px; }
-.spx-price { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #111827; margin-bottom: 2px; }
+.spx-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; }
+.spx-price { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #111827; }
 .spx-change { font-size: 12px; font-weight: 600; }
 .spx-chart-wrap { margin-top: 10px; margin-bottom: 6px; }
-.spx-range { font-size: 10px; color: #6b7280; display: flex; justify-content: space-between; letter-spacing: 0.3px; }
-.clock-card { width: 240px; }
+.spx-range { font-size: 10px; color: #9ca3af; display: flex; justify-content: space-between; letter-spacing: 0.3px; }
+
+/* Clock */
+.clock-card { width: 285px; }
 .clock-face { display: flex; justify-content: center; margin-bottom: 10px; }
 .date-display { font-size: 11px; color: #374151; text-align: center; }
-.tz-label { font-size: 10px; color: #4b5563; margin-top: 3px; letter-spacing: 1px; font-weight: 700; text-align: center; }
-.right-col { display: flex; flex-direction: column; gap: 14px; }
+.tz-label { font-size: 9px; color: #9ca3af; margin-top: 4px; letter-spacing: 1.5px; font-weight: 700; text-align: center; text-transform: uppercase; }
+
+/* Dodgers */
 .dodgers-card { width: 285px; }
 .game-teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.team { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.team-logo { width: 44px; height: 44px; object-fit: contain; }
+.team { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.team-logo { width: 42px; height: 42px; object-fit: contain; }
 .team-abbr { font-size: 9px; font-weight: 700; color: #374151; letter-spacing: 0.5px; }
+.team-record { font-size: 9px; color: #9ca3af; letter-spacing: 0.3px; }
 .vs-scores { text-align: center; flex: 1; }
 .score-line { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .score-num { font-size: 34px; font-weight: 700; color: #111827; letter-spacing: -1px; }
@@ -44,17 +53,20 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 .result-badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
 .win { background: #dcfce7; color: #166534; }
 .loss { background: #fee2e2; color: #991b1b; }
+
+/* News */
 .news-card { width: 285px; }
 .news-list { list-style: none; }
-.news-item { padding: 7px 0; border-bottom: 1px solid #f3f4f6; }
+.news-item { padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
 .news-item:last-child { border-bottom: none; padding-bottom: 0; }
-.news-sport { font-size: 9px; color: #6b7280; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
-.news-headline { font-size: 12px; color: #111827; font-weight: 500; line-height: 1.4; }
+.news-sport { font-size: 8px; color: #9ca3af; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+.news-headline { font-size: 12px; color: #111827; font-weight: 500; line-height: 1.45; }
 </style>
 </head>
 <body>
 
-<div class="left-col">
+<!-- Column 1: Weather + S&P 500 -->
+<div class="col">
   <div class="card weather-card">
     <div class="label">Los Angeles Weather</div>
     <div class="weather-main">
@@ -66,46 +78,52 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
   </div>
   <div class="card spx-card">
     <div class="label">S&amp;P 500</div>
-    <div class="spx-price" id="spx-price">--</div>
-    <div class="spx-change" id="spx-change" style="color:#6b7280">Loading...</div>
-    <div class="spx-chart-wrap"><canvas id="spx-chart" width="245" height="80"></canvas></div>
+    <div class="spx-top">
+      <div class="spx-price" id="spx-price">--</div>
+      <div class="spx-change" id="spx-change" style="color:#9ca3af">Loading...</div>
+    </div>
+    <div class="spx-chart-wrap"><canvas id="spx-chart" width="245" height="72"></canvas></div>
     <div class="spx-range"><span id="spx-low">L: --</span><span id="spx-high">H: --</span></div>
   </div>
 </div>
 
-<div class="card clock-card">
-  <div class="label">Los Angeles Time</div>
-  <div class="clock-face"><canvas id="clock" width="186" height="186"></canvas></div>
-  <div class="date-display" id="date">Loading...</div>
-  <div class="tz-label">PDT &middot; UTC-7</div>
-</div>
-
-<div class="right-col">
+<!-- Column 2: Clock + Dodgers -->
+<div class="col">
+  <div class="card clock-card">
+    <div class="label">Los Angeles Time</div>
+    <div class="clock-face"><canvas id="clock" width="186" height="186"></canvas></div>
+    <div class="date-display" id="date">Loading...</div>
+    <div class="tz-label" id="tz-label">PDT &middot; UTC-7</div>
+  </div>
   <div class="card dodgers-card">
     <div class="label">LA Dodgers</div>
-    <div id="dodgers-content"><div style="color:#6b7280;font-size:12px">Loading...</div></div>
+    <div id="dodgers-content"><div style="color:#9ca3af;font-size:12px">Loading...</div></div>
   </div>
+</div>
+
+<!-- Column 3: Sports News -->
+<div class="col">
   <div class="card news-card">
     <div class="label">Top Sports News</div>
-    <ul class="news-list" id="news-list"><li style="color:#6b7280;font-size:12px">Loading...</li></ul>
+    <ul class="news-list" id="news-list"><li style="color:#9ca3af;font-size:12px">Loading...</li></ul>
   </div>
 </div>
 
 <script>
 var WMO={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-var EM={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
+var EM={0:'âï¸',1:'ð¤',2:'â',3:'âï¸',45:'ð«',48:'ð«',51:'ð¦',53:'ð¦',55:'ð§',61:'ð§',63:'ð§',65:'ð§',71:'âï¸',73:'âï¸',75:'âï¸',80:'ð¦',81:'ð¦',82:'â',95:'â',96:'â',99:'â'};
 var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 fetch('https://api.open-meteo.com/v1/forecast?latitude=34.0522&longitude=-118.2437&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=8')
 .then(function(r){return r.json();}).then(function(d){
   var cur=d.current,code=cur.weather_code;
-  document.getElementById('icon').textContent=EM[code]||'🌡';
-  document.getElementById('temp').textContent=Math.round(cur.temperature_2m)+'°F';
+  document.getElementById('icon').textContent=EM[code]||'ð¡';
+  document.getElementById('temp').textContent=Math.round(cur.temperature_2m)+'Â°F';
   document.getElementById('condition').textContent=WMO[code]||'Unknown';
   var fc=d.daily,out='';
   for(var i=1;i<8;i++){
     var day=new Date(fc.time[i]+'T12:00:00');
-    out+='<div class="day"><div class="day-name">'+DAYS[day.getDay()]+'</div><div class="day-icon">'+(EM[fc.weather_code[i]]||'🌡')+'</div><span class="day-hi">'+Math.round(fc.temperature_2m_max[i])+'°</span><span class="day-lo">'+Math.round(fc.temperature_2m_min[i])+'°</span></div>';
+    out+='<div class="day"><div class="day-name">'+DAYS[day.getDay()]+'</div><div class="day-icon">'+(EM[fc.weather_code[i]]||'ð¡')+'</div><span class="day-hi">'+Math.round(fc.temperature_2m_max[i])+'Â°</span><span class="day-lo">'+Math.round(fc.temperature_2m_min[i])+'Â°</span></div>';
   }
   document.getElementById('forecast').innerHTML=out;
 }).catch(function(){document.getElementById('condition').textContent='Weather unavailable';});
@@ -114,8 +132,14 @@ function drawClock(){
   var canvas=document.getElementById('clock');
   var ctx=canvas.getContext('2d');
   var now=new Date();
-  var la=new Date(now.toLocaleString('en-US',{timeZone:'America/Los_Angeles'}));
-  var h=la.getHours()%12,m=la.getMinutes(),s=la.getSeconds();
+  var tparts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'numeric',minute:'numeric',second:'numeric',hour12:false}).formatToParts(now);
+  var h=parseInt(tparts.find(function(p){return p.type==='hour';}).value)%12;
+  var m=parseInt(tparts.find(function(p){return p.type==='minute';}).value);
+  var s=parseInt(tparts.find(function(p){return p.type==='second';}).value);
+  var tzName=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',timeZoneName:'short'}).formatToParts(now).find(function(p){return p.type==='timeZoneName';}).value;
+  var tzOffset=tzName==='PDT'?'UTC-7':'UTC-8';
+  var tzEl=document.getElementById('tz-label');
+  if(tzEl)tzEl.textContent=tzName+' Â· '+tzOffset;
   var cx=93,cy=93,r=80;
   ctx.clearRect(0,0,186,186);
 
@@ -191,7 +215,7 @@ function drawClock(){
   ctx.fillStyle='#1c1c1c';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText('♛',cx,cy-57);
+  ctx.fillText('â',cx,cy-57);
 
   ctx.font='bold 8.5px "Times New Roman",Georgia,serif';
   ctx.fillStyle='#1c1c1c';
@@ -256,12 +280,12 @@ function drawSPXChart(points,isUp){
   var maxV=Math.max.apply(null,points);
   var range=maxV-minV||1;
   var pt=6,pb=6,pl=4,pr=4;
-  var W2=W-pl-pr,H2=H-pt-pb;
+  var W2=W-pl-pr,HÒ=H-pt-pb;
   var color=isUp?'#16a34a':'#dc2626';
   var n=points.length;
 
-  var grad=ctx.createLinearGradient(0,pt,0,H-pb);
-  grad.addColorStop(0,isUp?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)');
+  var grad=ctx.createLinearGradient(0,pt,0,s-pb);
+  grad.addColorStop(0,isUp?'rgba(22,163,74,0.18)':'rgba(220,38,38,0.18)');
   grad.addColorStop(1,'rgba(255,255,255,0)');
 
   ctx.beginPath();
@@ -301,9 +325,9 @@ function loadSPX(){
     var prev=meta.previousClose||meta.chartPreviousClose;
     var chg=price-prev;
     var pct=(chg/prev)*100;
-    document.getElementById('spx-price').textContent=price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('spx-price').textContent=price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:-});
     var cel=document.getElementById('spx-change');
-    cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
+    cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'+' +'('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
     cel.style.color=chg>=0?'#16a34a':'#dc2626';
     if(meta.regularMarketDayLow) document.getElementById('spx-low').textContent='L: '+meta.regularMarketDayLow.toFixed(2);
     if(meta.regularMarketDayHigh) document.getElementById('spx-high').textContent='H: '+meta.regularMarketDayHigh.toFixed(2);
@@ -314,7 +338,7 @@ function loadSPX(){
   })
   .catch(function(){
     document.getElementById('spx-change').textContent='Market data unavailable';
-    document.getElementById('spx-change').style.color='#6b7280';
+    document.getElementById('spx-change').style.color='#9ca3af';
   });
 }
 loadSPX();
@@ -330,12 +354,16 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
     if(game)break;
   }
   var el=document.getElementById('dodgers-content');
-  if(!game){el.innerHTML='<div style="color:#6b7280;font-size:12px;text-align:center;padding:20px 0">No game today</div>';return;}
+  if(!game){el.innerHTML='<div style="color:#9ca3af;font-size:12px;text-align:center;padding:20px 0">No game today</div>';return;}
   var comp=game.competitions[0];
-  var away=comp.competitors[0].homeAway==='away'?comp.competitors[0]:comp.competitors[1];
+  var away=comp.competitors[0].homeAway==='away'comp.competitors[0]:comp.competitors[1];
   var home=comp.competitors[0].homeAway==='home'?comp.competitors[0]:comp.competitors[1];
   var lad=away.team.abbreviation==='LAD'?away:home;
   var opp=away.team.abbreviation==='LAD'?home:away;
+  var ladRecord=(lad.records&&lad.records[0])?lad.records[0].summary:'';
+  var oppRecord=(opp.records&&opp.records[0])?opp.records[0].summary:'';
+  var awayRecord=away.team.abbreviation==='LAD'?ladRecord:oppRecord;
+  var homeRecord=away.team.abbreviation==='LAD'?oppRecord:ladRecord;
   var status=comp.status.type;
   var badge='';
   if(status.completed){
@@ -343,32 +371,32 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
     badge='<div style="text-align:center;margin-bottom:6px"><span class="result-badge '+(won?'win':'loss')+'">'+(won?'WIN':'LOSS')+'</span></div>';
   }
   el.innerHTML='<div class="game-teams">'+
-    '<div class="team"><img class="team-logo" src="'+away.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+away.team.abbreviation+'</div></div>'+
+    '<div class="team"><img class="team-logo" src="'+away.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+away.team.abbreviation+)'</div>'+(awayRecord?'<div class="team-record">'+awayRecord+'</div>':'')+'</div>'+
     '<div class="vs-scores"><div class="score-line"><span class="score-num">'+away.score+'</span><span class="score-sep">&ndash;</span><span class="score-num">'+home.score+'</span></div></div>'+
-    '<div class="team"><img class="team-logo" src="'+home.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+home.team.abbreviation+'</div></div>'+
+    '<div class="team"><img class="team-logo" src="'+home.team.logo+'" onerror="this.style.display=\'none\'"><div class="team-abbr">'+home.team.abbreviation+'</div>'+(homeRecord?'<div class="team-record">'+homeRecord+'</div>':'')+'</div>'+
     '</div>'+badge+'<div class="game-status">'+status.shortDetail+'</div>';
-}).catch(function(){document.getElementById('dodgers-content').innerHTML='<div style="color:#6b7280;font-size:12px">Score unavailable</div>';});
+}).catch(function(){document.getElementById('dodgers-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Score unavailable</div>';});
 
 Promise.all([
-  fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=4').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
   fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
   fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+  fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
 ]).then(function(sets){
   var all=[];
-  var labs=['MLB','NBA','NFL'];
+  var labs=['NBA','NFL','MLB'];
   sets.forEach(function(d,idx){
     var arts=d.articles||[];
     for(var i=0;i<Math.min(arts.length,2);i++){
-      if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
+	    if(arts[i]&&arts[i].headline) all.push({sport:labs[idx],headline:arts[i].headline});
     }
   });
-  all=all.slice(0,5);
+  all=all.slice(0,6);
   var out='';
   for(var i=0;i<all.length;i++){
-    out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
+	out+='<li class="news-item"><div class="news-sport">'+all[i].sport+'</div><div class="news-headline">'+all[i].headline+'</div></li>';
   }
-  document.getElementById('news-list').innerHTML=out||'<li style="color:#6b7280;font-size:12px">No news available</li>';
-}).catch(function(){document.getElementById('news-list').innerHTML='<li style="color:#6b7280;font-size:12px">News unavailable</li>';});
+  document.getElementById('news-list').innerHTML=out||'<li style="color:#9ca3af;font-size:12px">No news available</li>';
+}).catch(function(){document.getElementById('news-list').innerHTML='<li style="color:#9ca3af;font-size:12px">News unavailable</li>';});
 </script>
 </body>
 </html>
