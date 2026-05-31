@@ -404,9 +404,9 @@ function loadScores(){
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
   }));
-  var breakingP=fetch('https://site.api.espn.com/apis/site/v2/sports/news?limit=5').then(function(r){return r.json();}).catch(function(){return {articles:[]};});
-  Promise.all([sportsP,breakingP]).then(function(outer){
-    var all=outer[0],breaking=outer[1];
+  var nflNewsP=fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=1').then(function(r){return r.json();}).catch(function(){return {articles:[]};});
+  Promise.all([sportsP,nflNewsP]).then(function(outer){
+    var all=outer[0],nflArts=outer[1].articles||[];
     var html='';
     all.forEach(function(sd){
       html+='<div class="sport-section"><div class="sport-lbl">'+sd.cfg.label+'</div>';
@@ -455,11 +455,16 @@ function loadScores(){
       html+='</div>';
     });
     html+='<div class="sport-section"><div class="sport-lbl">Breaking News</div>';
-    var arts=breaking.articles||[],count=0;
-    for(var i=0;i<arts.length&&count<3;i++){
-      if(arts[i]&&arts[i].headline){html+='<div class="sg-bullet">'+arts[i].headline+'</div>';count++;}
+    var bullets=[
+      all[0]&&all[0].articles[0]&&all[0].articles[0].headline,
+      nflArts[0]&&nflArts[0].headline,
+      all[1]&&all[1].articles[0]&&all[1].articles[0].headline
+    ].filter(Boolean);
+    if(bullets.length){
+      bullets.forEach(function(h){html+='<div class="sg-bullet">'+h+'</div>';});
+    } else {
+      html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
     }
-    if(!count)html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
     html+='</div>';
     document.getElementById('scores-content').innerHTML=html;
   }).catch(function(){document.getElementById('scores-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Scores unavailable</div>';});
