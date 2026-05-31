@@ -24,7 +24,8 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 .clock-face { display: flex; justify-content: center; margin-bottom: 10px; }
 .date-display { font-size: 11px; color: #374151; text-align: center; }
 .tz-label { font-size: 10px; color: #4b5563; margin-top: 3px; letter-spacing: 1px; font-weight: 700; text-align: center; }
-.dodgers-card { width: 240px; }
+.right-col { display: flex; flex-direction: column; gap: 14px; }
+.dodgers-card { width: 285px; }
 .game-teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .team { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .team-logo { width: 44px; height: 44px; object-fit: contain; }
@@ -49,7 +50,7 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
 <div class="card weather-card">
   <div class="label">Los Angeles Weather</div>
   <div class="weather-main">
-    <div class="weather-icon" id="icon">…</div>
+    <div class="weather-icon" id="icon">...</div>
     <div class="temp" id="temp">--</div>
   </div>
   <div class="condition" id="condition">Loading...</div>
@@ -61,18 +62,21 @@ body { background: #f0f2f5; display: flex; justify-content: center; align-items:
   <div class="date-display" id="date">Loading...</div>
   <div class="tz-label">PDT · UTC-7</div>
 </div>
-<div class="card dodgers-card">
-  <div class="label">LA Dodgers</div>
-  <div id="dodgers-content"><div style="color:#6b7280;font-size:12px">Loading...</div></div>
-</div>
-<div class="card news-card">
-  <div class="label">Top Sports News</div>
-  <ul class="news-list" id="news-list"><li style="color:#6b7280;font-size:12px">Loading...</li></ul>
+<div class="right-col">
+  <div class="card dodgers-card">
+    <div class="label">LA Dodgers</div>
+    <div id="dodgers-content"><div style="color:#6b7280;font-size:12px">Loading...</div></div>
+  </div>
+  <div class="card news-card">
+    <div class="label">Top Sports News</div>
+    <ul class="news-list" id="news-list"><li style="color:#6b7280;font-size:12px">Loading...</li></ul>
+  </div>
 </div>
 <script>
 var WMO={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
 var EM={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌦',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
 fetch('https://api.open-meteo.com/v1/forecast?latitude=34.0522&longitude=-118.2437&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=8')
 .then(function(r){return r.json();}).then(function(d){
   var cur=d.current,code=cur.weather_code;
@@ -93,32 +97,137 @@ function drawClock(){
   var now=new Date();
   var la=new Date(now.toLocaleString('en-US',{timeZone:'America/Los_Angeles'}));
   var h=la.getHours()%12,m=la.getMinutes(),s=la.getSeconds();
-  var cx=93,cy=93,r=88;
+  var cx=93,cy=93,r=80;
   ctx.clearRect(0,0,186,186);
-  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle='#ffffff';ctx.fill();
-  ctx.strokeStyle='#e5e7eb';ctx.lineWidth=2;ctx.stroke();
-  ctx.beginPath();ctx.arc(cx,cy,r+3,0,2*Math.PI);ctx.strokeStyle='#d1d5db';ctx.lineWidth=2;ctx.stroke();
+
+  // Drop shadow
+  ctx.beginPath();ctx.arc(cx+2,cy+2,r+8,0,2*Math.PI);
+  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fill();
+
+  // Gold bezel
+  var bezGrad=ctx.createLinearGradient(cx-r-8,cy-r-8,cx+r+8,cy+r+8);
+  bezGrad.addColorStop(0,'#e8c84a');
+  bezGrad.addColorStop(0.2,'#f7e48a');
+  bezGrad.addColorStop(0.5,'#c8a428');
+  bezGrad.addColorStop(0.75,'#f0d060');
+  bezGrad.addColorStop(1,'#a07818');
+  ctx.beginPath();ctx.arc(cx,cy,r+8,0,2*Math.PI);ctx.fillStyle=bezGrad;ctx.fill();
+
+  // Bezel inner edge
+  ctx.beginPath();ctx.arc(cx,cy,r+1,0,2*Math.PI);
+  ctx.strokeStyle='#7a5c10';ctx.lineWidth=1.5;ctx.stroke();
+
+  // Dial — dark navy
+  var dialGrad=ctx.createRadialGradient(cx-18,cy-18,4,cx,cy,r);
+  dialGrad.addColorStop(0,'#243358');
+  dialGrad.addColorStop(0.5,'#0f1e3a');
+  dialGrad.addColorStop(1,'#08142a');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle=dialGrad;ctx.fill();
+
+  // Minute dots
   for(var i=0;i<60;i++){
-    var a=(i*6-90)*Math.PI/180,isH=i%5===0;
-    ctx.beginPath();
-    ctx.moveTo(cx+(r-2)*Math.cos(a),cy+(r-2)*Math.sin(a));
-    ctx.lineTo(cx+(isH?r-13:r-6)*Math.cos(a),cy+(isH?r-13:r-6)*Math.sin(a));
-    ctx.strokeStyle=isH?'#374151':'#d1d5db';ctx.lineWidth=isH?2:1;ctx.stroke();
+    if(i%5!==0){
+      var a=(i*6-90)*Math.PI/180;
+      ctx.beginPath();ctx.arc(cx+(r-5)*Math.cos(a),cy+(r-5)*Math.sin(a),1,0,2*Math.PI);
+      ctx.fillStyle='rgba(200,164,40,0.45)';ctx.fill();
+    }
   }
-  ctx.font='bold 9px system-ui,sans-serif';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.textBaseline='middle';
-  var nums=[12,1,2,3,4,5,6,7,8,9,10,11];
-  for(var j=0;j<12;j++){
-    var na=(j*30-90)*Math.PI/180;
-    ctx.fillText(nums[j],cx+(r-24)*Math.cos(na),cy+(r-24)*Math.sin(na));
+
+  // Hour baton markers (skip i=0, which is 12 — crown goes there)
+  for(var i=1;i<12;i++){
+    var a=(i*30-90)*Math.PI/180;
+    ctx.save();
+    ctx.translate(cx+(r-12)*Math.cos(a),cy+(r-12)*Math.sin(a));
+    ctx.rotate(a+Math.PI/2);
+    var bGrad=ctx.createLinearGradient(-2.5,-8,2.5,8);
+    bGrad.addColorStop(0,'#b89020');
+    bGrad.addColorStop(0.4,'#f7e48a');
+    bGrad.addColorStop(1,'#b89020');
+    ctx.fillStyle=bGrad;
+    ctx.fillRect(-2.5,-8,5,16);
+    ctx.restore();
   }
+
+  // Crown at 12
+  ctx.font='bold 13px serif';
+  ctx.fillStyle='#e8c84a';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('❛',cx,cy-56);
+
+  // ROLEX
+  ctx.font='bold 9px "Times New Roman",Georgia,serif';
+  ctx.fillStyle='#eacc50';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('ROLEX',cx,cy-40);
+
+  // OYSTER PERPETUAL
+  ctx.font='5.5px "Times New Roman",Georgia,serif';
+  ctx.fillStyle='rgba(220,185,60,0.75)';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('OYSTER PERPETUAL',cx,cy-31);
+
+  // Date window at 3 o'clock
+  ctx.fillStyle='rgba(240,238,228,0.96)';
+  ctx.strokeStyle='#c8a428';
+  ctx.lineWidth=1;
+  ctx.fillRect(cx+47,cy-6,15,12);
+  ctx.strokeRect(cx+47,cy-6,15,12);
+  ctx.font='bold 7px sans-serif';
+  ctx.fillStyle='#111827';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(la.getDate(),cx+54,cy);
+
+  // Hour hand — gold cathedral
   var hA=((h+m/60+s/3600)*30-90)*Math.PI/180;
-  ctx.beginPath();ctx.moveTo(cx-7*Math.cos(hA),cy-7*Math.sin(hA));ctx.lineTo(cx+46*Math.cos(hA),cy+46*Math.sin(hA));ctx.strokeStyle='#111827';ctx.lineWidth=5;ctx.lineCap='round';ctx.stroke();
+  ctx.save();
+  ctx.translate(cx,cy);ctx.rotate(hA);
+  var hGrad=ctx.createLinearGradient(-4,0,4,0);
+  hGrad.addColorStop(0,'#906810');
+  hGrad.addColorStop(0.35,'#f0d060');
+  hGrad.addColorStop(0.65,'#f7e48a');
+  hGrad.addColorStop(1,'#906810');
+  ctx.fillStyle=hGrad;
+  ctx.beginPath();
+  ctx.moveTo(-3,9);ctx.lineTo(-3.5,-20);ctx.lineTo(-1.5,-44);ctx.lineTo(0,-47);ctx.lineTo(1.5,-44);ctx.lineTo(3.5,-20);ctx.lineTo(3,9);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(10,22,48,0.55)';ctx.fillRect(-1.2,-38,2.4,18);
+  ctx.restore();
+
+  // Minute hand — gold, longer
   var mA=((m+s/60)*6-90)*Math.PI/180;
-  ctx.beginPath();ctx.moveTo(cx-9*Math.cos(mA),cy-9*Math.sin(mA));ctx.lineTo(cx+64*Math.cos(mA),cy+64*Math.sin(mA));ctx.strokeStyle='#111827';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+  ctx.save();
+  ctx.translate(cx,cy);ctx.rotate(mA);
+  var minGrad=ctx.createLinearGradient(-3,0,3,0);
+  minGrad.addColorStop(0,'#906810');
+  minGrad.addColorStop(0.35,'#f0d060');
+  minGrad.addColorStop(0.65,'#f7e48a');
+  minGrad.addColorStop(1,'#906810');
+  ctx.fillStyle=minGrad;
+  ctx.beginPath();
+  ctx.moveTo(-2.5,9);ctx.lineTo(-2.5,-26);ctx.lineTo(-1,-66);ctx.lineTo(0,-69);ctx.lineTo(1,-66);ctx.lineTo(2.5,-26);ctx.lineTo(2.5,9);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(10,22,48,0.55)';ctx.fillRect(-1,-58,2,20);
+  ctx.restore();
+
+  // Second hand — red with counterbalance disc
   var sA=(s*6-90)*Math.PI/180;
-  ctx.beginPath();ctx.moveTo(cx-14*Math.cos(sA),cy-14*Math.sin(sA));ctx.lineTo(cx+70*Math.cos(sA),cy+70*Math.sin(sA));ctx.strokeStyle='#ef4444';ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
-  ctx.beginPath();ctx.arc(cx,cy,4,0,2*Math.PI);ctx.fillStyle='#111827';ctx.fill();
-  ctx.beginPath();ctx.arc(cx,cy,2,0,2*Math.PI);ctx.fillStyle='#ef4444';ctx.fill();
+  ctx.save();
+  ctx.translate(cx,cy);ctx.rotate(sA);
+  ctx.strokeStyle='#dc2626';ctx.lineWidth=1.2;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,-71);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,9,3.5,0,2*Math.PI);ctx.fillStyle='#dc2626';ctx.fill();
+  ctx.restore();
+
+  // Center cap — gold
+  ctx.beginPath();ctx.arc(cx,cy,5,0,2*Math.PI);
+  var capGrad=ctx.createRadialGradient(cx-1,cy-1,0.5,cx,cy,5);
+  capGrad.addColorStop(0,'#f7e48a');capGrad.addColorStop(1,'#7a5c10');
+  ctx.fillStyle=capGrad;ctx.fill();
+
   document.getElementById('date').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(now);
 }
 drawClock();setInterval(drawClock,1000);
@@ -138,10 +247,11 @@ fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard')
   var away=comp.competitors[0].homeAway==='away'?comp.competitors[0]:comp.competitors[1];
   var home=comp.competitors[0].homeAway==='home'?comp.competitors[0]:comp.competitors[1];
   var lad=away.team.abbreviation==='LAD'?away:home;
+  var opp=away.team.abbreviation==='LAD'?home:away;
   var status=comp.status.type;
   var badge='';
   if(status.completed){
-    var won=parseInt(lad.score)>parseInt(away.team.abbreviation==='LAD'?home.score:away.score);
+    var won=parseInt(lad.score)>parseInt(opp.score);
     badge='<div style="text-align:center;margin-bottom:6px"><span class="result-badge '+(won?'win':'loss')+'">'+(won?'WIN':'LOSS')+'</span></div>';
   }
   el.innerHTML='<div class="game-teams">'+
