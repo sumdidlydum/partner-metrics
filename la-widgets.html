@@ -404,18 +404,24 @@ function loadScores(){
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
   }));
-  var breakingP=fetch('https://api.allorigins.win/raw?url='+encodeURIComponent('https://www.cbssports.com/rss/headlines')).then(function(r){return r.text();}).then(function(t){
-    var xml=new DOMParser().parseFromString(t,'text/xml');
-    var items=xml.querySelectorAll('item');
+  var breakingP=Promise.all([
+    fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=5').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+    fetch('https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/news?limit=4').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+    fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=3').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
+  ]).then(function(res){
     var hls=[];
-    for(var i=0;i<items.length&&hls.length<5;i++){
-      var ti=items[i].querySelector('title');if(!ti)continue;
-      var tx=ti.textContent.trim();var tl=tx.toLowerCase();
-      var skip=tl.includes('newsletter')||tl.includes('parlay')||tl.includes('promo code')||tl.includes('bonus bet')||tl.includes('sportsbook')||tl.includes('draftkings')||tl.includes('betmgm')||tl.includes('fanduel')||tl.includes('waiver wire')||(tl.includes('odds')&&(tl.includes('pick')||tl.includes('best bet')||tl.includes('prop')||tl.includes('prediction')||tl.includes('futures')));
-      if(skip)continue;
-      hls.push(tx);
-    }
-    return hls;
+    var seen={};
+    res.forEach(function(d){
+      (d.articles||[]).forEach(function(a){
+        if(!a.headline)return;
+        var tl=a.headline.toLowerCase();
+        var skip=tl.includes('fantasy')||tl.includes('waiver wire')||tl.includes('depth chart')||(tl.includes('odds')&&(tl.includes('pick')||tl.includes('best bet')||tl.includes('prop')||tl.includes('prediction')));
+        if(skip||seen[a.headline])return;
+        seen[a.headline]=1;
+        hls.push(a.headline);
+      });
+    });
+    return hls.slice(0,4);
   }).catch(function(){return [];});
   Promise.all([sportsP,breakingP]).then(function(outer){
     var all=outer[0],headlines=outer[1];
