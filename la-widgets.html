@@ -404,9 +404,20 @@ function loadScores(){
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
   }));
-  var nflNewsP=fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=1').then(function(r){return r.json();}).catch(function(){return {articles:[]};});
-  Promise.all([sportsP,nflNewsP]).then(function(outer){
-    var all=outer[0],nflArts=outer[1].articles||[];
+  var breakingP=fetch('https://corsproxy.io/?url=https://www.cbssports.com/rss/headlines').then(function(r){return r.text();}).then(function(t){
+    var xml=new DOMParser().parseFromString(t,'text/xml');
+    var items=xml.querySelectorAll('item');
+    var hls=[];
+    for(var i=0;i<items.length&&hls.length<5;i++){
+      var ti=items[i].querySelector('title');if(!ti)continue;
+      var tx=ti.textContent.trim();var tl=tx.toLowerCase();
+      if((tl.includes('odds')&&(tl.includes('pick')||tl.includes('bet')||tl.includes('prop')||tl.includes('prediction')))||tl.includes('newsletter')||tl.includes('parlay'))continue;
+      hls.push(tx);
+    }
+    return hls;
+  }).catch(function(){return [];});
+  Promise.all([sportsP,breakingP]).then(function(outer){
+    var all=outer[0],headlines=outer[1];
     var html='';
     all.forEach(function(sd){
       html+='<div class="sport-section"><div class="sport-lbl">'+sd.cfg.label+'</div>';
@@ -455,13 +466,8 @@ function loadScores(){
       html+='</div>';
     });
     html+='<div class="sport-section"><div class="sport-lbl">Breaking News</div>';
-    var bullets=[
-      all[0]&&all[0].articles[0]&&all[0].articles[0].headline,
-      nflArts[0]&&nflArts[0].headline,
-      all[1]&&all[1].articles[0]&&all[1].articles[0].headline
-    ].filter(Boolean);
-    if(bullets.length){
-      bullets.forEach(function(h){html+='<div class="sg-bullet">'+h+'</div>';});
+    if(headlines.length){
+      headlines.slice(0,3).forEach(function(h){html+='<div class="sg-bullet">'+h+'</div>';});
     } else {
       html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
     }
