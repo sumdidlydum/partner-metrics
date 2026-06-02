@@ -409,11 +409,13 @@ function loadScores(){
     var re=/href="https:\/\/www\.espn\.com\/(nfl|mlb|nba)\/story\/[^"]*"[^>]*>([^<]{15,})<\/a>/g;
     var m;
     while((m=re.exec(html))!==null){
-      var sport=m[1],title=m[2].trim();
-      if(sport==='nfl'&&nfl.length<3)nfl.push(title);
-      else if(sport==='mlb'&&mlb.length<3)mlb.push(title);
-      else if(sport==='nba'&&nba.length<3)nba.push(title);
-      if(nfl.length>=3&&mlb.length>=3&&nba.length>=3)break;
+      var sport=m[1],title=m[2].trim(),tl=title.toLowerCase();
+      var soft=title[0]==='\''||title[0]==='"'||tl.includes('stomping ground')||tl.includes('return to old')||tl.includes('latest star to')||tl.includes('looking back')||tl.includes('looks back')||tl.includes('throwback')||tl.includes('disguise')||tl.includes('mayor')||tl.includes('bedtime')||tl.includes('sentenced')||tl.includes('logo court')||tl.includes('sportswear')||tl.includes('co-founder')||tl.includes('reminisce')||tl.includes('old days');
+      if(soft)continue;
+      if(sport==='nfl'&&nfl.length<2)nfl.push(title);
+      else if(sport==='mlb'&&mlb.length<2)mlb.push(title);
+      else if(sport==='nba'&&nba.length<2)nba.push(title);
+      if(nfl.length>=2&&mlb.length>=2&&nba.length>=2)break;
     }
     return {nfl:nfl,mlb:mlb,nba:nba};
   }).catch(function(){return {nfl:[],mlb:[],nba:[]};});
