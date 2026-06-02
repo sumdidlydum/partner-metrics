@@ -404,21 +404,21 @@ function loadScores(){
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
   }));
-  var breakingP=fetch('https://api.codetabs.com/v1/proxy/?quest=https://www.cbssports.com/rss/headlines').then(function(r){return r.text();}).then(function(t){
-    var xml=new DOMParser().parseFromString(t,'text/xml');
-    var items=xml.querySelectorAll('item');
-    var hls=[];
-    for(var i=0;i<items.length&&hls.length<4;i++){
-      var ti=items[i].querySelector('title');if(!ti)continue;
-      var tx=ti.textContent.trim();var tl=tx.toLowerCase();
-      var skip=tl.startsWith('betting')||tl.includes(' odds')||tl.includes('odds,')||tl.includes('parlay')||tl.includes('promo code')||tl.includes('bonus bet')||tl.includes('sportsbook')||tl.includes('draftkings')||tl.includes('betmgm')||tl.includes('fanduel')||tl.includes('best bet')||tl.includes('waiver wire')||tl.includes('nhl')||tl.includes('stanley cup')||tl.includes('newsletter')||tl.includes('picks for')||tl.includes('futures odds')||tl.includes('kalshi')||tl.includes('betting guide');
-      if(skip)continue;
-      hls.push(tx);
+  var breakingP=fetch('https://api.codetabs.com/v1/proxy/?quest=https://www.espn.com/espn/latestnews').then(function(r){return r.text();}).then(function(html){
+    var nfl=[],mlb=[],nba=[];
+    var re=/href="https:\/\/www\.espn\.com\/(nfl|mlb|nba)\/story\/[^"]*"[^>]*>([^<]{15,})<\/a>/g;
+    var m;
+    while((m=re.exec(html))!==null){
+      var sport=m[1],title=m[2].trim();
+      if(sport==='nfl'&&nfl.length<3)nfl.push(title);
+      else if(sport==='mlb'&&mlb.length<3)mlb.push(title);
+      else if(sport==='nba'&&nba.length<3)nba.push(title);
+      if(nfl.length>=3&&mlb.length>=3&&nba.length>=3)break;
     }
-    return hls;
-  }).catch(function(){return [];});
+    return {nfl:nfl,mlb:mlb,nba:nba};
+  }).catch(function(){return {nfl:[],mlb:[],nba:[]};});
   Promise.all([sportsP,breakingP]).then(function(outer){
-    var all=outer[0],headlines=outer[1];
+    var all=outer[0],news=outer[1];
     var html='';
     all.forEach(function(sd){
       html+='<div class="sport-section"><div class="sport-lbl">'+sd.cfg.label+'</div>';
@@ -466,12 +466,18 @@ function loadScores(){
       }
       html+='</div>';
     });
-    html+='<div class="sport-section"><div class="sport-lbl">Breaking News</div>';
-    if(headlines.length){
-      headlines.slice(0,3).forEach(function(h){html+='<div class="sg-bullet">'+h+'</div>';});
-    } else {
-      html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
-    }
+    html+='<div class="sport-section"><div class="sport-lbl">Latest News</div>';
+    var newsSections=[{key:'nfl',label:'NFL'},{key:'mlb',label:'MLB'},{key:'nba',label:'NBA'}];
+    var hasAny=false;
+    newsSections.forEach(function(sec){
+      var items=news[sec.key]||[];
+      if(items.length){
+        hasAny=true;
+        html+='<div class="sport-lbl" style="margin-top:8px;letter-spacing:1px">'+sec.label+'</div>';
+        items.forEach(function(h){html+='<div class="sg-bullet">'+h+'</div>';});
+      }
+    });
+    if(!hasAny)html+='<div style="color:#9ca3af;font-size:11px">Unavailable</div>';
     html+='</div>';
     document.getElementById('scores-content').innerHTML=html;
   }).catch(function(){document.getElementById('scores-content').innerHTML='<div style="color:#9ca3af;font-size:12px">Scores unavailable</div>';});
