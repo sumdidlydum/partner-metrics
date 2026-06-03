@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-02",
+  "updated": "2026-06-03",
   "rows": [
     {
       "month": "2025-12",
@@ -100,17 +100,17 @@
     {
       "month": "2026-06",
       "seg": "Affiliates",
-      "apps": 4,
+      "apps": 6,
       "approvs": 2,
-      "deps": 3,
-      "rate": 87.4
+      "deps": 5,
+      "rate": 87.3
     },
     {
       "month": "2026-06",
       "seg": "Incorporator",
-      "apps": 18,
-      "approvs": 16,
-      "deps": 24,
+      "apps": 46,
+      "approvs": 38,
+      "deps": 47,
       "rate": 81.9
     }
   ]
