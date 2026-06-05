@@ -404,20 +404,21 @@ function loadScores(){
       fetch('https://site.api.espn.com/apis/site/v2/sports/'+cfg.s+'/'+cfg.l+'/news?limit=2').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
     ]).then(function(res){return {cfg:cfg,events:res[0].events||[],articles:res[1].articles||[]};});
   }));
-  var breakingP=fetch('https://api.codetabs.com/v1/proxy/?quest=https://www.espn.com/espn/latestnews').then(function(r){return r.text();}).then(function(html){
-    var nfl=[],mlb=[],nba=[];
-    var re=/href="https:\/\/www\.espn\.com\/(nfl|mlb|nba)\/story\/[^"]*"[^>]*>([^<]{15,})<\/a>/g;
-    var m;
-    while((m=re.exec(html))!==null){
-      var sport=m[1],title=m[2].trim(),tl=title.toLowerCase();
-      var soft=title[0]==='\''||title[0]==='"'||tl.includes('stomping ground')||tl.includes('return to old')||tl.includes('latest star to')||tl.includes('looking back')||tl.includes('looks back')||tl.includes('throwback')||tl.includes('disguise')||tl.includes('mayor')||tl.includes('bedtime')||tl.includes('sentenced')||tl.includes('logo court')||tl.includes('sportswear')||tl.includes('co-founder')||tl.includes('reminisce')||tl.includes('old days');
-      if(soft)continue;
-      if(sport==='nfl'&&nfl.length<2)nfl.push(title);
-      else if(sport==='mlb'&&mlb.length<2)mlb.push(title);
-      else if(sport==='nba'&&nba.length<2)nba.push(title);
-      if(nfl.length>=2&&mlb.length>=2&&nba.length>=2)break;
+  function filterNews(articles,max){
+    var out=[];
+    for(var i=0;i<articles.length&&out.length<max;i++){
+      var t=articles[i].headline||'';var tl=t.toLowerCase();
+      var skip=t[0]==='\''||t[0]==='"'||tl.includes('fantasy')||tl.includes(' odds')||tl.includes('odds,')||tl.includes('picks for')||tl.includes('prediction')||tl.includes('betting')||tl.includes('waiver wire')||tl.includes('depth chart')||tl.includes('stomping ground')||tl.includes('return to old')||tl.includes('latest star to')||tl.includes('looking back')||tl.includes('looks back')||tl.includes('throwback')||tl.includes('disguise')||tl.includes('mayor')||tl.includes('bedtime')||tl.includes('logo court')||tl.includes('sportswear')||tl.includes('reminisce')||tl.includes('lifetime achievement')||tl.includes('viral');
+      if(!skip&&t.length>10)out.push(t);
     }
-    return {nfl:nfl,mlb:mlb,nba:nba};
+    return out;
+  }
+  var breakingP=Promise.all([
+    fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=15').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+    fetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=15').then(function(r){return r.json();}).catch(function(){return {articles:[]};}),
+    fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=15').then(function(r){return r.json();}).catch(function(){return {articles:[]};})
+  ]).then(function(res){
+    return {nfl:filterNews(res[0].articles||[],2),mlb:filterNews(res[1].articles||[],2),nba:filterNews(res[2].articles||[],2)};
   }).catch(function(){return {nfl:[],mlb:[],nba:[]};});
   Promise.all([sportsP,breakingP]).then(function(outer){
     var all=outer[0],news=outer[1];
