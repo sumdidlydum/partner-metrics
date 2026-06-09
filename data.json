@@ -1,19 +1,19 @@
 {
-  "updated": "2026-06-08",
+  "updated": "2026-06-09",
   "rows": [
-    {"month": "2025-12", "seg": "Affiliates",   "apps": 58,  "approvs": 47,  "deps": 51,  "rate": 86.3},
     {"month": "2025-12", "seg": "Incorporator", "apps": 766, "approvs": 521, "deps": 548, "rate": 81.6},
-    {"month": "2026-01", "seg": "Affiliates",   "apps": 69,  "approvs": 49,  "deps": 43,  "rate": 86.2},
+    {"month": "2025-12", "seg": "Affiliates", "apps": 58, "approvs": 47, "deps": 51, "rate": 86.3},
     {"month": "2026-01", "seg": "Incorporator", "apps": 496, "approvs": 365, "deps": 316, "rate": 82.5},
-    {"month": "2026-02", "seg": "Affiliates",   "apps": 59,  "approvs": 49,  "deps": 46,  "rate": 86.5},
+    {"month": "2026-01", "seg": "Affiliates", "apps": 69, "approvs": 49, "deps": 43, "rate": 86.2},
+    {"month": "2026-02", "seg": "Affiliates", "apps": 59, "approvs": 49, "deps": 46, "rate": 86.5},
     {"month": "2026-02", "seg": "Incorporator", "apps": 539, "approvs": 408, "deps": 317, "rate": 82.5},
-    {"month": "2026-03", "seg": "Affiliates",   "apps": 86,  "approvs": 50,  "deps": 45,  "rate": 85.7},
+    {"month": "2026-03", "seg": "Affiliates", "apps": 86, "approvs": 50, "deps": 45, "rate": 85.7},
     {"month": "2026-03", "seg": "Incorporator", "apps": 600, "approvs": 494, "deps": 451, "rate": 82.4},
-    {"month": "2026-04", "seg": "Affiliates",   "apps": 63,  "approvs": 38,  "deps": 33,  "rate": 86.5},
     {"month": "2026-04", "seg": "Incorporator", "apps": 578, "approvs": 435, "deps": 353, "rate": 81.2},
-    {"month": "2026-05", "seg": "Affiliates",   "apps": 92,  "approvs": 70,  "deps": 60,  "rate": 86.5},
+    {"month": "2026-04", "seg": "Affiliates", "apps": 63, "approvs": 38, "deps": 33, "rate": 86.5},
+    {"month": "2026-05", "seg": "Affiliates", "apps": 92, "approvs": 70, "deps": 60, "rate": 86.5},
     {"month": "2026-05", "seg": "Incorporator", "apps": 466, "approvs": 397, "deps": 346, "rate": 81.2},
-    {"month": "2026-06", "seg": "Affiliates",   "apps": 20,  "approvs": 13,  "deps": 12,  "rate": 87.1},
-    {"month": "2026-06", "seg": "Incorporator", "apps": 114, "approvs": 94,  "deps": 113, "rate": 81.7}
+    {"month": "2026-06", "seg": "Incorporator", "apps": 132, "approvs": 106, "deps": 131, "rate": 81.7},
+    {"month": "2026-06", "seg": "Affiliates", "apps": 25, "approvs": 18, "deps": 14, "rate": 87.2}
   ]
 }
