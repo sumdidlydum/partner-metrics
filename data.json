@@ -1,21 +1,133 @@
 {
-  "updated": "2026-07-02",
+  "updated": "2026-07-06",
   "rows": [
-    {"month": "2025-12", "seg": "Incorporator", "apps": 766, "approvs": 521, "deps": 548, "rate": 81.6},
-    {"month": "2025-12", "seg": "Affiliates",   "apps": 58,  "approvs": 47,  "deps": 51,  "rate": 86.3},
-    {"month": "2026-01", "seg": "Incorporator", "apps": 496, "approvs": 365, "deps": 316, "rate": 82.5},
-    {"month": "2026-01", "seg": "Affiliates",   "apps": 69,  "approvs": 49,  "deps": 43,  "rate": 86.2},
-    {"month": "2026-02", "seg": "Affiliates",   "apps": 59,  "approvs": 49,  "deps": 46,  "rate": 86.5},
-    {"month": "2026-02", "seg": "Incorporator", "apps": 539, "approvs": 408, "deps": 317, "rate": 82.5},
-    {"month": "2026-03", "seg": "Affiliates",   "apps": 86,  "approvs": 50,  "deps": 45,  "rate": 85.7},
-    {"month": "2026-03", "seg": "Incorporator", "apps": 600, "approvs": 494, "deps": 451, "rate": 82.4},
-    {"month": "2026-04", "seg": "Incorporator", "apps": 578, "approvs": 435, "deps": 353, "rate": 81.2},
-    {"month": "2026-04", "seg": "Affiliates",   "apps": 63,  "approvs": 38,  "deps": 33,  "rate": 86.5},
-    {"month": "2026-05", "seg": "Affiliates",   "apps": 101, "approvs": 77,  "deps": 63,  "rate": 87.1},
-    {"month": "2026-05", "seg": "Incorporator", "apps": 476, "approvs": 403, "deps": 354, "rate": 81.4},
-    {"month": "2026-06", "seg": "Incorporator", "apps": 504, "approvs": 374, "deps": 354, "rate": 74.2},
-    {"month": "2026-06", "seg": "Affiliates",   "apps": 99,  "approvs": 60,  "deps": 57,  "rate": 60.6},
-    {"month": "2026-07", "seg": "Incorporator", "apps": 21,  "approvs": 19,  "deps": 25,  "rate": 90.5},
-    {"month": "2026-07", "seg": "Affiliates",   "apps": 6,   "approvs": 2,   "deps": 2,   "rate": 33.3}
+    {
+      "month": "2025-12",
+      "seg": "Incorporator",
+      "apps": 766,
+      "approvs": 521,
+      "deps": 548,
+      "rate": 81.6
+    },
+    {
+      "month": "2025-12",
+      "seg": "Affiliates",
+      "apps": 58,
+      "approvs": 47,
+      "deps": 51,
+      "rate": 86.3
+    },
+    {
+      "month": "2026-01",
+      "seg": "Incorporator",
+      "apps": 496,
+      "approvs": 365,
+      "deps": 316,
+      "rate": 82.5
+    },
+    {
+      "month": "2026-01",
+      "seg": "Affiliates",
+      "apps": 69,
+      "approvs": 49,
+      "deps": 43,
+      "rate": 86.2
+    },
+    {
+      "month": "2026-02",
+      "seg": "Affiliates",
+      "apps": 59,
+      "approvs": 49,
+      "deps": 46,
+      "rate": 86.5
+    },
+    {
+      "month": "2026-02",
+      "seg": "Incorporator",
+      "apps": 539,
+      "approvs": 408,
+      "deps": 317,
+      "rate": 82.5
+    },
+    {
+      "month": "2026-03",
+      "seg": "Affiliates",
+      "apps": 86,
+      "approvs": 50,
+      "deps": 45,
+      "rate": 85.7
+    },
+    {
+      "month": "2026-03",
+      "seg": "Incorporator",
+      "apps": 600,
+      "approvs": 494,
+      "deps": 451,
+      "rate": 82.4
+    },
+    {
+      "month": "2026-04",
+      "seg": "Incorporator",
+      "apps": 578,
+      "approvs": 435,
+      "deps": 353,
+      "rate": 81.2
+    },
+    {
+      "month": "2026-04",
+      "seg": "Affiliates",
+      "apps": 63,
+      "approvs": 38,
+      "deps": 33,
+      "rate": 86.5
+    },
+    {
+      "month": "2026-05",
+      "seg": "Affiliates",
+      "apps": 101,
+      "approvs": 77,
+      "deps": 63,
+      "rate": 87.1
+    },
+    {
+      "month": "2026-05",
+      "seg": "Incorporator",
+      "apps": 476,
+      "approvs": 403,
+      "deps": 354,
+      "rate": 81.4
+    },
+    {
+      "month": "2026-06",
+      "seg": "Incorporator",
+      "apps": 508,
+      "approvs": 377,
+      "deps": 354,
+      "rate": 74.2
+    },
+    {
+      "month": "2026-06",
+      "seg": "Affiliates",
+      "apps": 103,
+      "approvs": 64,
+      "deps": 58,
+      "rate": 62.1
+    },
+    {
+      "month": "2026-07",
+      "seg": "Incorporator",
+      "apps": 75,
+      "approvs": 52,
+      "deps": 51,
+      "rate": 69.3
+    },
+    {
+      "month": "2026-07",
+      "seg": "Affiliates",
+      "apps": 9,
+      "approvs": 3,
+      "deps": 5,
+      "rate": 33.3
+    }
   ]
 }
