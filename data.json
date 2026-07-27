@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-24",
+  "updated": "2026-07-27",
   "rows": [
     {"month": "2025-12", "seg": "Affiliates",   "apps": 58,  "approvs": 47,  "deps": 51,  "rate": 86.3},
     {"month": "2025-12", "seg": "Incorporator", "apps": 766, "approvs": 521, "deps": 548, "rate": 81.6},
@@ -15,7 +15,7 @@
     {"month": "2026-05", "seg": "Incorporator", "apps": 481, "approvs": 411, "deps": 361, "rate": 85.4},
     {"month": "2026-06", "seg": "Affiliates",   "apps": 102, "approvs": 63,  "deps": 55,  "rate": 61.8},
     {"month": "2026-06", "seg": "Incorporator", "apps": 507, "approvs": 378, "deps": 354, "rate": 74.6},
-    {"month": "2026-07", "seg": "Affiliates",   "apps": 51,  "approvs": 35,  "deps": 32,  "rate": 68.6},
-    {"month": "2026-07", "seg": "Incorporator", "apps": 355, "approvs": 271, "deps": 244, "rate": 76.3}
+    {"month": "2026-07", "seg": "Affiliates",   "apps": 64,  "approvs": 44,  "deps": 34,  "rate": 68.8},
+    {"month": "2026-07", "seg": "Incorporator", "apps": 380, "approvs": 297, "deps": 260, "rate": 78.2}
   ]
 }
